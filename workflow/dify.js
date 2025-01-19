@@ -17,24 +17,24 @@ class Task {
 }
 
 class WorkflowTask extends Task {
-    taskName = "Dify工作流任务";
+    taskName = "Difyワークフロータスク";
 
     async run() {
       if(!env.DIFY_BASE_URL) {
-        throw new Error("没有配置Dify api地址，请检查后执行!");
+        throw new Error("Dify APIアドレスが設定されていません。確認してから実行してください!");
       }
       let inputs = {}
       try {
         inputs = env.DIFY_INPUTS ? JSON.parse(env.DIFY_INPUTS) : {}
       } catch (error) {
-        console.error('DIFY_INPUTS 格式错误，请确保是json格式, 可能会影响任务流执行')
+        console.error('DIFY_INPUTSの形式が間違っています。JSON形式であることを確認してください。ワークフローの実行に影響を与える可能性があります')
       }
       const user = 'dify-schedule'
       const workflow = new WorkflowClient(this.dify.token, env.DIFY_BASE_URL);
-      console.log(`正在获取Dify工作流基础信息...`)
+      console.log(`Difyワークフローの基本情報を取得中...`)
       const info = await workflow.info(user);
       this.workfolwName = info.data?.name || '';
-      console.log(`Dify工作流【${info.data.name}】开始执行...`)
+      console.log(`Difyワークフロー【${info.data.name}】の実行開始...`)
       const response =  await workflow.getWorkflowResult(inputs, user,true)
       this.result = response.text || ''
     }
@@ -61,7 +61,7 @@ async function run(args) {
 
     const message = messageList.join(`\n${"-".repeat(15)}\n`);
     Notify.pushMessage({
-      title: "Dify工作流定时助手",
+      title: "Difyワークフロースケジューラー",
       content: message,
       msgtype: "text"
     });
