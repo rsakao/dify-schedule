@@ -5,7 +5,7 @@ import pkg from "../package.json" assert { type: "json" };
 
 export class Notify {
   /**
-   * 邮件推送
+   * メール推送
    * @param options
    */
   async email(options) {

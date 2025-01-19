@@ -2,7 +2,7 @@ import axios from "axios";
 export const BASE_URL = "https://api.dify.ai/v1";
 
 export const routes = {
-  //  app's
+  // アプリケーションの
   feedback: {
     method: "POST",
     url: (message_id) => `/messages/${message_id}/feedbacks`,
@@ -24,13 +24,13 @@ export const routes = {
     url: () => `/meta`,
   },
 
-  // completion's
+  // 完成の
   createCompletionMessage: {
     method: "POST",
     url: () => `/completion-messages`,
   },
 
-  // chat's
+  // チャットの
   createChatMessage: {
     method: "POST",
     url: () => `/chat-messages`,
@@ -64,7 +64,7 @@ export const routes = {
     url: () => `/audio-to-text`,
   },
 
-  // workflow‘s
+  // ワークフローの
   getWorkflowInfo: {
     method: "GET",
     url: () => `/info`,
@@ -407,19 +407,19 @@ export class WorkflowClient extends DifyClient {
                   }
 
                   if (!res.event || res.event === 'error' || res.status === 400) {
-                    console.log(`工作流输出错误code:${res.code}`, res.message)
+                    console.log(`ワークフロー出力エラーコード:${res.code}`, res.message)
                     return
                   }
                   if (res.event === 'workflow_started' || res.event === 'tts_message') {
                       task_id = res?.workflow_run_id
-                      console.log('工作流开始执行')
+                      console.log('ワークフローが開始されました')
                   }
                   if (res.event === 'node_started' || res.event=== 'node_finished') {
                     task_id = res?.workflow_run_id
-                    console.log('工作流node节点执行任务中')
+                    console.log('ワークフローノードがタスクを実行中')
                   }
                   if (res.event === 'workflow_finished' || res.event === 'tts_message_end') {
-                    console.log('工作流执行完毕，正在组装数据进行发送')
+                    console.log('ワークフローが完了しました。データを組み立てて送信します')
                     task_id = res?.workflow_run_id
                   }
                 }
@@ -428,26 +428,26 @@ export class WorkflowClient extends DifyClient {
             stream.on('end', async () => {
 
               const { data } = task_id ? await this.result(task_id) : { data: { outputs: '' } }
-              console.log('获取工作流执行结果', task_id, JSON.stringify(data.outputs))
+              console.log('ワークフローの実行結果を取得', task_id, JSON.stringify(data.outputs))
               let outputs = {}
               if(data.outputs) {
                   try {
                     outputs = JSON.parse(data.outputs)
                   } catch (error) {
-                    console.log(`获取工作流执行结果,失败:${error}`)
+                    console.log(`ワークフローの実行結果を取得、失敗:${error}`)
                   }
               }
 
               resolve({ text: outputs?.text, task_id: task_id })
             })
           } catch (e) {
-            resolve({ text: `Dify工作流执行出错，${e}`, task_id: '' })
+            resolve({ text: `Difyワークフローの実行エラー，${e}`, task_id: '' })
           }
         })
     }
     if (!isStream) {
       if (res.data.code) {
-        console.log('Dify 工作流执行失败', res.data.code, res.data.message)
+        console.log('Dify ワークフローの実行に失敗しました', res.data.code, res.data.message)
         return Promise.reject(res.message)
       }
       const response = res.data
@@ -456,7 +456,7 @@ export class WorkflowClient extends DifyClient {
             task_id: response?.task_id,
           }
     } else {
-        console.log('进入Dify工作流，请耐心等待...')
+        console.log('Difyワークフローに入ります。しばらくお待ちください...')
         const result = await asyncSSE(res.data)
         return result
     }
